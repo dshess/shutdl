@@ -1,5 +1,6 @@
 const fs = require('fs');
 const rootScraper = require('./rootScraper.js');
+const albumScraper = require('./albumScraper.js');
 
 // If cacheFile exists and can be read as JSON, return it.  If not, call the
 // generate function, and write the results into the cache file, then return
@@ -118,6 +119,58 @@ async function scrapeAll(browserInstance){
                 }
             }
         )(page, rootUrl));
+
+        // Short-circuit if root-only was requested.
+        if (argv.root) {
+            await browser.close();
+            return;
+        }
+
+        let albumIds = {};
+        let photoIds = {};
+        if (argv.album) {
+            argv.album.split(",").forEach((id) => {
+                albumIds[id] = 1;
+            });
+        } else if (argv.photo) {
+            if (argv.photo.indexOf(":") == -1) {
+                console.log("--photo=albumId:photoId,photoId,photoId,...");
+                process.exit();
+            }
+            const a = argv.photo.split(":");
+            console.log(a);
+            albumIds[a[0]] = 1;
+            a[1].split(",").forEach((id) => {
+                photoIds[id] = 1;
+            });
+        }
+
+        for (let i = 0; i < rootInfo.albums.length; i++) {
+            const album = rootInfo.albums[i];
+
+            if ((argv.album || argv.photo) && !albumIds[album.id]) {
+                return;
+            }
+
+            logger("album:", album.id);
+
+            const albumDir = dirname + "/" + album.subdir;
+            try {
+                fs.accessSync(albumDir, fs.constants.F_OK);
+            } catch (err) {
+                fs.mkdirSync(albumDir);
+            }
+
+            const albumInfoFile = albumDir + "/Info.json";
+            logger("albumInfoFile:", albumInfoFile);
+            const albumInfo = await cacheOr(albumInfoFile, !noCache, (
+                function (page, url, id){
+                    return () => {
+                        return albumScraper(page, url, id);
+                    }
+                }
+            )(page, album.url, album.id));
+        }
 
         await browser.close();
     }
