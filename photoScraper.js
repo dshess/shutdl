@@ -1,6 +1,3 @@
-const fs = require('fs');
-const https = require('https');
-
 const photoScraper = {
     async scrape(page, url, id) {
         let logger = console.log
@@ -54,14 +51,10 @@ const photoScraper = {
         return info;
     },
 
-    // TODO: Maybe combine these, again, to get rid of the double-goto.
-    // TODO: Or figure out how to return the fetch URL?
-    async download(page, url, fname, alt) {
+    // Create a download URL for the image on a photo page.
+    async downloadUrl(page) {
         let logger = console.log
-        //logger = () => {}          // Comment this out to see logging.
-
-        logger("url: ", url);
-        await page.goto(url, {timeout: 0});
+        logger = () => {}          // Comment this out to see logging.
 
         let imgUrl = "https://cmd.shutterfly.com/commands/async/downloadpicture";
         imgUrl += "?site=site";
@@ -91,19 +84,14 @@ const photoScraper = {
         imgUrl += "&albumKey="+albumKey;
 
         // TBD: I think this determines the name the file is downloaded to.
-        // Probably not necessary since we'll be overriding it, but provided just in
-        // case of consistency checks.
+        // Probably not necessary since we'll be overriding it, but provided
+        // just in case of consistency checks.
+        const alt_sel = '.pic-detail-img .detail-img';
+        const alt = await page.$eval(alt_sel, item => item.getAttribute('alt'));
         imgUrl += "&title="+alt;
         logger("imgUrl:", imgUrl);
 
-        // Attempt to fetch the image.
-        https.get(imgUrl, res => {
-            const stream = fs.createWriteStream(fname);
-            res.pipe(stream);
-            stream.on('finish', () => {
-                stream.close();
-            });
-        });
+        return imgUrl;
     }
 }
 

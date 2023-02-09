@@ -32,9 +32,6 @@ async function scrapeRoot(page, rootUrl) {
     let logger = console.log
     logger = () => {}          // Comment this out to see logging.
 
-    logger("Navigate to "+rootUrl);
-    await page.goto(rootUrl, {timeout: 0});
-
     // TODO: If the album count is low, there will not be an "All"
     // button.  Wait for the right stuff to appear, and then only
     // select "All" if needed.  See albumScraper.js for an example.

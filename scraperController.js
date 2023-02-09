@@ -1,4 +1,5 @@
 const fs = require('fs');
+const https = require('https');
 const rootScraper = require('./rootScraper.js');
 const albumScraper = require('./albumScraper.js');
 const photoScraper = require('./photoScraper.js');
@@ -109,14 +110,20 @@ async function scrapeAll(browserInstance){
             }
             process.exit(1);
         }
-        
+
+        // TODO: --album implies --root, and --photo implies --album.  Should
+        // --nocache apply to only the most specific part, or to the entire
+        // stack?
         const noCache = argv.nocache;
 
         const rootInfoFile = dirname + "/Info.json";
         const rootInfo = await cacheOr(rootInfoFile, !noCache, (
             function (page, rootUrl){
-                return () => {
-                    return rootScraper(page, rootUrl);
+                return async () => {
+                    logger("Navigate to ", rootUrl);
+                    await page.goto(rootUrl, {timeout: 0});
+
+                    return await rootScraper(page, rootUrl);
                 }
             }
         )(page, rootUrl));
@@ -164,8 +171,11 @@ async function scrapeAll(browserInstance){
             logger("albumInfoFile:", albumInfoFile);
             const albumInfo = await cacheOr(albumInfoFile, !noCache, (
                 function (page, url, id){
-                    return () => {
-                        return albumScraper(page, url, id);
+                    return async () => {
+                        logger("Navigate to ", url);
+                        await page.goto(url, {timeout: 0});
+
+                        return await albumScraper(page, url, id);
                     }
                 }
             )(page, album.url, album.id));
@@ -181,27 +191,34 @@ async function scrapeAll(browserInstance){
                 logger("photoInfoFile:", photoInfoFile);
                 const photoInfo = await cacheOr(photoInfoFile, !noCache, (
                     function (page, url, id){
-                        return () => {
-                            return photoScraper.scrape(page, url, id);
+                        return async () => {
+                            logger("Navigate to ", url);
+                            await page.goto(url, {timeout: 0});
+
+                            info = await photoScraper.scrape(page, url, id);
+
+                            const imgPath = albumDir + "/" + info.fname;
+                            logger("photoImageFile:", imgPath);
+
+                            const imgUrl = await photoScraper.downloadUrl(page);
+                            logger("photoImgUrl:", imgUrl);
+
+                            // Attempt to fetch the image.
+                            https.get(imgUrl, res => {
+                                const stream = fs.createWriteStream(imgPath);
+                                res.pipe(stream);
+                                stream.on('finish', () => {
+                                    stream.close();
+                                });
+                            });
+
+                            // 2s pause for rate limit.
+                            await page.waitForTimeout(2000);
+
+                            return info;
                         }
                     }
                 )(page, photo.url, photo.id));
-
-                const photoImageFile = albumDir + "/" + photoInfo.fname;
-                logger("photoImageFile:", photoImageFile);
-                try {
-                    fs.accessSync(photoImageFile, fs.constants.F_OK);
-                } catch (err) {
-                    // Only on ENOENT so that other kinds of failures don't
-                    // lead to sudden fetch storms.
-                    if (err.code != 'ENOENT') {
-                        throw(err);
-                    }
-                    await photoScraper.download(page, photoInfo.url, photoImageFile, photoInfo.title);
-
-                    // 2s pause for rate limit.
-                    await page.waitForTimeout(2000);
-                }
             }
         }
 
