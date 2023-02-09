@@ -1,0 +1,17 @@
+Have a setup command, something like:
+
+--init --dir="${DIR}" --url="${URL}"
+
+This could figure out the right url and remember it, so you don't have to
+specify it every time.  It could also include the login process.
+
+site.shutterfly.com is home, .header-tab-selected contains an href to the
+current URL, and the text "Home"
+
+From Home, "Pictures & Videos" goes to site.shutterfly.com/pictures.
+.header-tab-selected contains an href to the current URL, and the text "Pictures
+& Videos".
+
+From "Pictures & Videos", clicking "Pictures" takes you to:
+   https://site.shutterfly.com/pictures/5
+which lists the first 25 albums.  I don't know if "5" is always the same value.
