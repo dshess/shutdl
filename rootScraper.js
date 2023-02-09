@@ -37,9 +37,9 @@ async function scrapeRoot(page, rootUrl) {
 
     // TODO: If the album count is low, there will not be an "All"
     // button.  Wait for the right stuff to appear, and then only
-    // select "All" if needed.
-    
-    logger("Clock All button");
+    // select "All" if needed.  See albumScraper.js for an example.
+
+    logger("Click All button");
     await page.evaluate('Shr.AjaxDataGrid._16("All", 5)');
     await page.waitForSelector(".all");
 
@@ -65,7 +65,7 @@ async function scrapeRoot(page, rootUrl) {
         const album = albums[i]
         let albumInfo = {}
 
-        const id_sel = '.i-edit';
+        const id_sel = '.picAlbumTitle .i-edit';
         albumInfo.id = await album.$eval(id_sel, item => item.getAttribute('s:menuargs'))
         logger("id: ", albumInfo.id)
 
@@ -73,9 +73,9 @@ async function scrapeRoot(page, rootUrl) {
         albumInfo.title = await album.$eval(title_sel, item => item.innerText.trim());
         logger("title: ", albumInfo.title);
 
-        const link_sel = '.picAlbumTitle .pic-album-title';
-        albumInfo.link = await album.$eval(title_sel, item => item.getAttribute('href'))
-        logger("link: ", albumInfo.link)
+        const url_sel = '.picAlbumTitle .pic-album-title';
+        albumInfo.url = await album.$eval(url_sel, item => item.getAttribute('href'))
+        logger("url: ", albumInfo.url)
 
         let count_sel = '.picAlbumTitle .i-eye';
         albumInfo.count = await album.$eval(count_sel, item => item.innerText.trim());
