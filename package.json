@@ -1,0 +1,18 @@
+{
+  "name": "shutdl",
+  "version": "1.0.0",
+  "description": "Shutterfly Share Site Scraper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "site": "node site.js",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsrender": "^1.0.12",
+    "prompt": "^1.1.0",
+    "puppeteer": "^8.0.0"
+  }
+}
