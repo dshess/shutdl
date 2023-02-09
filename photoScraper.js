@@ -55,6 +55,7 @@ const photoScraper = {
     },
 
     // TODO: Maybe combine these, again, to get rid of the double-goto.
+    // TODO: Or figure out how to return the fetch URL?
     async download(page, url, fname, alt) {
         let logger = console.log
         //logger = () => {}          // Comment this out to see logging.
@@ -68,16 +69,25 @@ const photoScraper = {
         // TBD: Unique id for the image?
         const imageId = await page.evaluate("Shr.P.sections[0].shutterflyId");
         logger("id:", imageId);
+        if (!imageId) {
+            throw("Missing imageId");
+        }
         imgUrl += "&id="+imageId;
 
         // TBD: Key for the overall collection?
         const collectionKey = await page.evaluate("Shr.P.sections[0].collectionKey");
         logger("collectionKey:", collectionKey);
+        if (!collectionKey) {
+            throw("Missing collectionKey");
+        }
         imgUrl += "&collectionKey="+collectionKey;
 
         // TBD: Unique key per album?
         const albumKey = await page.evaluate("Shr.P.sections[0].albumKey");
         logger("albumKey:", albumKey);
+        if (!albumKey) {
+            throw("Missing albumKey");
+        }
         imgUrl += "&albumKey="+albumKey;
 
         // TBD: I think this determines the name the file is downloaded to.
