@@ -39,12 +39,14 @@ function main(){
     // on the photo.
     const rootInfoFile = argv.dir + "/Info.json";
     let rootInfo = JSON.parse(fs.readFileSync(rootInfoFile));
-    for (let i = 0; i < rootInfo.albums.length; i++) {
-        const albumInfoFile = argv.dir + "/" + rootInfo.albums[i].subdir + "/Info.json";
-        rootInfo.albums[i]._info = JSON.parse(fs.readFileSync(albumInfoFile));
-        for (let j = 0; j < rootInfo.albums[i]._info.photos.length; j++) {
-            const photoInfoFile = argv.dir + "/" + rootInfo.albums[i].subdir + "/" + rootInfo.albums[i]._info.photos[j].id + ".json";
-            rootInfo.albums[i]._info.photos[j]._info = JSON.parse(fs.readFileSync(photoInfoFile));
+    for (let album of rootInfo.albums) {
+        const albumDir = argv.dir + "/" + album.subdir;
+        const albumInfoFile = albumDir + "/Info.json";
+        album._info = JSON.parse(fs.readFileSync(albumInfoFile));
+
+        for (let photo of album._info.photos) {
+            const photoInfoFile = albumDir + "/" + photo.id + ".json";
+            photo._info = JSON.parse(fs.readFileSync(photoInfoFile));
         }
     }
     logger("albums[0].photos[0]:", rootInfo.albums[0]._info.photos[0]);
@@ -66,11 +68,12 @@ function main(){
             albumInfo.nextAlbumDir = rootInfo.albums[i+1].subdir;
         }
 
-        const albumIndexFilename = argv.dir + "/" + albumInfo.subdir + "/index.html";
+        const albumDir = argv.dir + "/" + albumInfo.subdir;
+        const albumIndexFilename = albumDir + "/index.html";
         let albumIndexTmpl = jsrender.templates('./templates/album_index.html');
         let albumHtml = albumIndexTmpl(albumInfo);
         fs.writeFileSync(albumIndexFilename, albumHtml);
-        
+
         for (let j = 0; j < albumInfo._info.photos.length; j++) {
             let photoInfo = albumInfo._info.photos[j];
             photoInfo.rootTitle = rootInfo.title;
@@ -84,7 +87,7 @@ function main(){
                 photoInfo.nextPhoto = albumInfo._info.photos[j+1].id;
             }
 
-            const photoIndexFilename = argv.dir + "/" + albumInfo.subdir + "/" + photoInfo.id + "_photo.html";
+            const photoIndexFilename = albumDir + "/" + photoInfo.id + "_photo.html";
             let photoIndexTmpl = jsrender.templates('./templates/photo.html');
             let photoHtml = photoIndexTmpl(photoInfo);
             fs.writeFileSync(photoIndexFilename, photoHtml);
