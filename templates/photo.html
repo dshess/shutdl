@@ -1,0 +1,74 @@
+<html>
+  <style>
+    body {background-color: powderblue;}
+    #navbar {background-color: lightgreen;}
+    #navbar2 {
+        width: 100%;
+        background: white;
+        text-align: center;
+    }
+    .test {
+        border-radius: 25px;
+        border: 2px solid #73AD21;
+        padding: 20px;
+        height: 150px;
+    }
+    .info {
+        display: table;
+        padding: 10px;
+        width: auto;
+    }
+    .info-row {
+        display: table-row;
+        width: auto;
+    }
+    .info-left {
+        float: left;
+        display: table-column;
+        padding: 5px;
+    }
+    .info-right {
+        float: right;
+        display: table-column;
+        padding: 5px;
+    }
+  </style>
+
+  <head>
+    <title>{{:_info.title}} - {{:albumTitle}} - {{:rootTitle}}</title>
+  </head>
+  <body>
+    <div id="navbar">
+      <h3>
+        <a href="../index.html">{{:rootTitle}}</a> &gt;
+        <a href="index.html">{{:albumTitle}}</a> &gt;
+        {{:_info.title}}
+      </h3>
+    </div>
+    <div id="navbar2">
+      {{if prevPhoto}}<a href="{{:prevPhoto}}_photo.html">&lt;</a>{{else}}&lt;{{/if}}
+      &nbsp; {{:i}} of {{:c}} &nbsp; 
+      {{if nextPhoto}}<a href="{{:nextPhoto}}_photo.html">&gt;</a>{{else}}&gt;{{/if}}
+    </div>
+    <div class="info">
+      <div class="info-row">
+        <div class="info-left"><img width=800 src="{{:_info.fname}}"/></div>
+      </div>
+      <div class="info-row">
+        <div class="info-left">{{:_info.title}}</div>
+        <div class="info-right">{{:_info.added}}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-right">By: {{:_info.by}}</div>
+      </div>
+      {{if _info.alt != _info.title}}<div class="info-row">
+        <div class="info-left">{{:_info.alt}}</div>
+      </div>{{/if}}
+    </div>
+    <div style="color:gray;">
+      id:{{:id}}<br>
+      original: <a href="{{:url}}" target="_blank">Original Share Site Photo</a><br>
+      filename: {{:_info.fname}}
+    </div>
+  </body>
+</html>

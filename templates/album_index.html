@@ -1,0 +1,67 @@
+<html>
+  <style>
+    body {background-color: powderblue;}
+    #navbar {background-color: lightgreen;}
+    #navbar2 {
+        width: 100%;
+        background: white;
+        text-align: center;
+    }
+    .test {
+        border-radius: 25px;
+        border: 2px solid #73AD21;
+        padding: 20px;
+        height: 150px;
+    }
+    .photos {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 160px);
+        grid-gap: 10px;
+        padding: 10px;
+        background: white;
+        width: auto;
+    }
+    .photos-thumb {
+        display: table-column;
+        padding: 5px;
+        background: white;
+        width: 160;
+        height: auto;
+    }
+    .photos-thumb-img {
+        width: 160;
+        height: 120;
+        object-fit: contain;
+    }
+  </style>
+
+  <head>
+    <title>{{:title}} - {{:rootTitle}}</title>
+  </head>
+  <body>
+    <div id="navbar">
+      <h3><a href="../index.html">{{:rootTitle}}</a> &gt; {{:title}}</h3>
+    </div>
+    <div id="navbar2">
+      {{if prevAlbumDir}}<a href="../{{:prevAlbumDir}}/index.html">&lt;</a>{{else}}&lt;{{/if}}
+      &nbsp; {{:i}} of {{:c}} &nbsp; 
+      {{if nextAlbumDir}}<a href="../{{:nextAlbumDir}}/index.html">&gt;</a>{{else}}&gt;{{/if}}
+    </div>
+    <h3>{{:title}}</h3>
+    <div>{{:caption}}</div>
+    <div style="color:gray;">{{:date}}</div>
+    <div style="color:gray;">{{:count}}</div>
+    <div class="photos">
+      {{for _info.photos}}<div class="photos-thumb">
+        <a href="{{:id}}_photo.html" alt="{{:alt}}">
+          <img id="photo-{{:id}}" class="photos-thumb-img" src="{{:_info.fname}}" width=120>
+        </a>
+      </div>{{/for}}
+    </div>
+    <div style="color:gray;">
+      id:{{:id}}<br>
+      original: <a href="{{:url}}" target="_blank">Original Share Site Album</a><br>
+      subdir: {{:subdir}}
+    </div>
+  </body>
+</html>
