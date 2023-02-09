@@ -146,9 +146,7 @@ async function scrapeAll(browserInstance){
             });
         }
 
-        for (let i = 0; i < rootInfo.albums.length; i++) {
-            const album = rootInfo.albums[i];
-
+        for (const album of rootInfo.albums) {
             if ((argv.album || argv.photo) && !albumIds[album.id]) {
                 continue;
             }
@@ -172,9 +170,7 @@ async function scrapeAll(browserInstance){
                 }
             )(page, album.url, album.id));
 
-            for (let j = 0; j < albumInfo.photos.length; j++) {
-                const photo = albumInfo.photos[j];
-
+            for (const photo of albumInfo.photos) {
                 if (argv.nophotos || (argv.photo && !photoIds[photo.id])) {
                     continue;
                 }
