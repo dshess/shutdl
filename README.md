@@ -1,6 +1,6 @@
 Scrape a Shutterfly Share Sites into local files.
 
-**WARNING** This breaks for no obvious reason.  **WARNING**
+**WARNING** This breaks for no obvious reason.  See end of file.  **WARNING**
 
 Most basic usage:
 
@@ -37,10 +37,10 @@ npm start -- --dir="${DIR}" --url="${URL}"
 You will see Chromium browsing around on the site while populating DIR.  The
 files will be:
 
-* /Info.json - data scraped from the all-albums page.
-* /<date> - <album name>/Info.json - data scraped from an album page.
-* /<date> - <album name>/<photo id>.json - data scraped from a photo page.
-* /<date> - <album name>/<photo id>_<stuff>.jpg - downloaded photo.
+* .../Info.json - data scraped from the all-albums page.
+* .../[date] - [album name]/Info.json - data scraped from an album page.
+* .../[date] - [album name]/[photo id].json - data scraped from a photo page.
+* .../[date] - [album name]/[photo id]_[stuff].jpg - downloaded photo.
 
 The more-specific json files usually contain a superset of the information for
 an object relative to the less-specific json files.  Photo names are heuristic,
@@ -59,7 +59,8 @@ npm run site -- --dir="${DIR}"
 
 to generate html files to recreate a low-poly on-disk version of the share site.
 This is intended to be a quick way to let you browser around to verify that
-everything worked, it's not really setup to be served over the Internet.
+everything worked, it's not really setup to be served over the Internet.  It is
+a good idea to glance over it to make sure all the images were downloaded fully.
 
 ---
 
