@@ -1,6 +1,7 @@
 const fs = require('fs');
 const rootScraper = require('./rootScraper.js');
 const albumScraper = require('./albumScraper.js');
+const photoScraper = require('./photoScraper.js');
 
 // If cacheFile exists and can be read as JSON, return it.  If not, call the
 // generate function, and write the results into the cache file, then return
@@ -149,7 +150,7 @@ async function scrapeAll(browserInstance){
             const album = rootInfo.albums[i];
 
             if ((argv.album || argv.photo) && !albumIds[album.id]) {
-                return;
+                continue;
             }
 
             logger("album:", album.id);
@@ -170,6 +171,42 @@ async function scrapeAll(browserInstance){
                     }
                 }
             )(page, album.url, album.id));
+
+            for (let j = 0; j < albumInfo.photos.length; j++) {
+                const photo = albumInfo.photos[j];
+
+                if (argv.nophotos || (argv.photo && !photoIds[photo.id])) {
+                    continue;
+                }
+
+                logger("photo:", photo.id);
+
+                const photoInfoFile = albumDir + "/" + photo.id + ".json";
+                logger("photoInfoFile:", photoInfoFile);
+                const photoInfo = await cacheOr(photoInfoFile, !noCache, (
+                    function (page, url, id){
+                        return () => {
+                            return photoScraper.scrape(page, url, id);
+                        }
+                    }
+                )(page, photo.url, photo.id));
+
+                const photoImageFile = albumDir + "/" + photoInfo.fname;
+                logger("photoImageFile:", photoImageFile);
+                try {
+                    fs.accessSync(photoImageFile, fs.constants.F_OK);
+                } catch (err) {
+                    // Only on ENOENT so that other kinds of failures don't
+                    // lead to sudden fetch storms.
+                    if (err.code != 'ENOENT') {
+                        throw(err);
+                    }
+                    await photoScraper.download(page, photoInfo.url, photoImageFile, photoInfo.title);
+
+                    // 2s pause for rate limit.
+                    await page.waitForTimeout(2000);
+                }
+            }
         }
 
         await browser.close();
