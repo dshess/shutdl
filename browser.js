@@ -8,7 +8,8 @@ async function startBrowser(headless, userDataDir){
             headless: headless,
             defaultViewport: null,
             args: ["--disable-setuid-sandbox",
-                  "--disable-remote-fonts"],
+                   "--disable-remote-fonts",
+                   "--disable-web-security"],
             'ignoreHTTPSErrors': true,
             userDataDir: userDataDir
         });
