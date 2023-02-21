@@ -263,9 +263,12 @@ async function scrapeAll(browserInstance, argv){
         }
 
         await browser.close();
-    }
-    catch(err){
-        console.log("Could not resolve the browser instance => ", err);
+    } catch(err) {
+        // TODO: This is copy/paste from a project which was copy/paste from an
+        // example.  Maybe it would make more sense to just not have the try
+        // block?
+        console.log("error:", err);
+        throw(err);
     }
 }
 
