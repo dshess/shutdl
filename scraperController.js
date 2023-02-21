@@ -3,6 +3,7 @@ const https = require('https');
 const rootScraper = require('./rootScraper.js');
 const albumScraper = require('./albumScraper.js');
 const photoScraper = require('./photoScraper.js');
+const findRoot = require('./findRoot.js');
 
 // If cacheFile exists and can be read as JSON, return it.  If not, call the
 // generate function, and write the results into the cache file, then return
@@ -98,10 +99,18 @@ async function scrapeAll(browserInstance, argv){
         const rootInfo = await cacheOr(rootInfoFile, !noCache, (
             function (page, rootUrl){
                 return async () => {
+                    if (!rootUrl) {
+                        console.log("--url=<url> root URL required.");
+                        process.exit(1);
+                    }
+
                     logger("Navigate to ", rootUrl);
                     await page.goto(rootUrl, {timeout: 0});
+                    const albumsUrl = await findRoot(page, rootUrl);
 
-                    return await rootScraper(page, rootUrl);
+                    logger("Navigate to ", albumsUrl);
+                    await page.goto(albumsUrl, {timeout: 0});
+                    return await rootScraper(page, albumsUrl);
                 }
             }
         )(page, rootUrl));
