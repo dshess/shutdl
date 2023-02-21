@@ -1,16 +1,14 @@
 const photoScraper = {
     async scrape(page, url, id) {
         let logger = console.log
-        //logger = () => {}          // Comment this out to see logging.
-
-        logger("url: ", url);
-        await page.goto(url, {timeout: 0});
+        logger = () => {}          // Comment this out to see logging.
 
         let info = {};
 
         info.id = id;
         logger("photoId:", info.id);
         info.url = url;
+        logger("url: ", info.url);
 
         const title_sel = '.pic-img-title';
         info.title = await page.$eval(title_sel, item => item.innerText.trim());

@@ -3,7 +3,7 @@ const jsrender = require('jsrender');
 
 function main(){
     let logger = console.log
-    //logger = () => {}          // Comment this out to see logging.
+    logger = () => {}          // Comment this out to see logging.
 
     // https://stackoverflow.com/a/58188006
     const argv = (() => {

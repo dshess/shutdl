@@ -12,7 +12,7 @@ const findRoot = require('./findRoot.js');
 // If cacheFlag is false, refresh the cacheFile.
 async function cacheOr(cacheFile, cacheFlag, generate) {
     let logger = console.log
-    //logger = () => {}          // Comment this out to see logging.
+    logger = () => {}          // Comment this out to see logging.
 
     if (cacheFlag) {
         try {
@@ -41,7 +41,7 @@ async function cacheOr(cacheFile, cacheFlag, generate) {
 
 async function scrapeAll(browserInstance, argv){
     let logger = console.log
-    //logger = () => {}          // Comment this out to see logging.
+    logger = () => {}          // Comment this out to see logging.
 
     if (!argv.dir) {
         console.log("--dir=<dir> is required.");
@@ -104,11 +104,10 @@ async function scrapeAll(browserInstance, argv){
                         process.exit(1);
                     }
 
-                    logger("Navigate to ", rootUrl);
+                    console.log("root:", rootUrl);
                     await page.goto(rootUrl, {timeout: 0});
                     const albumsUrl = await findRoot(page, rootUrl);
 
-                    logger("Navigate to ", albumsUrl);
                     await page.goto(albumsUrl, {timeout: 0});
                     return await rootScraper(page, albumsUrl);
                 }
@@ -159,7 +158,7 @@ async function scrapeAll(browserInstance, argv){
             const albumInfo = await cacheOr(albumInfoFile, !noCache, (
                 function (page, url, id){
                     return async () => {
-                        logger("Navigate to ", url);
+                        console.log("album:", url);
                         await page.goto(url, {timeout: 0});
 
                         return await albumScraper(page, url, id);
@@ -179,7 +178,7 @@ async function scrapeAll(browserInstance, argv){
                 const photoInfo = await cacheOr(photoInfoFile, !noCache, (
                     function (page, url, id){
                         return async () => {
-                            logger("Navigate to ", url);
+                            console.log("photo:", url);
                             await page.goto(url, {timeout: 0});
 
                             info = await photoScraper.scrape(page, url, id);
