@@ -1,6 +1,15 @@
 const fs = require('fs');
 const jsrender = require('jsrender');
 
+function readable(file) {
+    try {
+        fs.accessSync(file, fs.constants.R_OK)
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
 function main(){
     let logger = console.log
     logger = () => {}          // Comment this out to see logging.
@@ -42,10 +51,16 @@ function main(){
     for (let album of rootInfo.albums) {
         const albumDir = argv.dir + "/" + album.subdir;
         const albumInfoFile = albumDir + "/Info.json";
+        if (argv.partial && !readable(albumInfoFile)) {
+            continue;
+        }
         album._info = JSON.parse(fs.readFileSync(albumInfoFile));
 
         for (let photo of album._info.photos) {
             const photoInfoFile = albumDir + "/" + photo.id + ".json";
+            if (argv.partial && !readable(photoInfoFile)) {
+                continue;
+            }
             photo._info = JSON.parse(fs.readFileSync(photoInfoFile));
         }
     }
@@ -58,6 +73,9 @@ function main(){
 
     for (let i = 0; i < rootInfo.albums.length; i++) {
         let albumInfo = rootInfo.albums[i];
+        if (argv.partial && !albumInfo._info) {
+            continue;
+        }
         albumInfo.rootTitle = rootInfo.title;
         albumInfo.i = i+1;
         albumInfo.c = rootInfo.albums.length;
@@ -76,6 +94,9 @@ function main(){
 
         for (let j = 0; j < albumInfo._info.photos.length; j++) {
             let photoInfo = albumInfo._info.photos[j];
+            if (argv.partial && !photoInfo._info) {
+                continue;
+            }
             photoInfo.rootTitle = rootInfo.title;
             photoInfo.albumTitle = albumInfo.title;
             photoInfo.i = j+1;

@@ -47,7 +47,9 @@
     {{for albums}}<div class="album">
       <div class="album-thumb">
         <a href="{{:subdir}}/index.html">
+          {{if _info}}
           <img class="img-thumb" src="{{:subdir}}/{{:_info.photos[0]._info.fname}}"/>
+          {{/if}}
         </a>
       </div>
       <div class="album-info">

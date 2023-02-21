@@ -56,7 +56,9 @@
     <div class="photos">
       {{for _info.photos}}<div class="photos-thumb">
         <a href="{{:id}}_photo.html" alt="{{:alt}}">
+          {{if _info}}
           <img id="photo-{{:id}}" class="photos-thumb-img" src="{{:_info.fname}}" width=120>
+          {{/if}}
         </a>
       </div>{{/for}}
     </div>
