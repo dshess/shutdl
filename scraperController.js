@@ -35,36 +35,12 @@ async function cacheOr(cacheFile, cacheFlag, generate) {
     return ret;
 }
 
-async function scrapeAll(browserInstance){
+async function scrapeAll(browserInstance, argv){
     let logger = console.log
     //logger = () => {}          // Comment this out to see logging.
 
-    // https://stackoverflow.com/a/58188006
-    const argv = (() => {
-        const arguments = {};
-        arguments.loose = [];
-        process.argv.slice(2).map( (element) => {
-            const simple = element.match('^--([a-zA-Z0-9]+)$');
-            if (simple) {
-                arguments[simple[1]] = true;
-                return;
-            }
-
-            const matches = element.match( '^--([a-zA-Z0-9]+)=(.*)$');
-            if ( matches ){
-                arguments[matches[1]] = matches[2]
-                    .replace(/^['"]/, '').replace(/['"]$/, '');
-                return;
-            }
-            arguments.loose.push(element);
-        });
-        return arguments;
-    })();
-
-    if (argv.help) {
-        console.log("Usage: npm start -- --dir=<dir>");
-        console.log("");
-        console.log("<dir> - root for storing scraped data.  Must exist.");
+    if (!argv.dir) {
+        console.log("--dir=<dir> is required.");
         process.exit(1);
     }
 
@@ -74,12 +50,11 @@ async function scrapeAll(browserInstance){
             fs.accessSync(dirname, fs.constants.D_OK);
         } catch(err) {
             if (err.code == 'ENOENT') {
-                console.log("Create output dir:");
-                console.log("  mkdir "+dirname);
+                fs.mkdirSync(dirname);
+            } else {
+                console.log(err);
                 process.exit(1);
             }
-            console.log(err);
-            process.exit(1);
         }
     }
 
@@ -229,4 +204,4 @@ async function scrapeAll(browserInstance){
     }
 }
 
-module.exports = (browserInstance) => scrapeAll(browserInstance)
+module.exports = (browserInstance, argv) => scrapeAll(browserInstance, argv)
