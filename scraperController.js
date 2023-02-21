@@ -31,7 +31,10 @@ async function cacheOr(cacheFile, cacheFlag, generate) {
 
     const ret = await generate();
     logger("ret:", ret);
-    fs.writeFileSync(cacheFile, JSON.stringify(ret, null, 2));
+
+    const tmpFile = cacheFile + ".tmp";
+    fs.writeFileSync(tmpFile, JSON.stringify(ret, null, 2));
+    fs.renameSync(tmpFile, cacheFile);
     return ret;
 }
 
@@ -179,11 +182,13 @@ async function scrapeAll(browserInstance, argv){
                             logger("photoImgUrl:", imgUrl);
 
                             // Attempt to fetch the image.
+                            const tmpPath = imgPath + ".tmp";
                             https.get(imgUrl, res => {
-                                const stream = fs.createWriteStream(imgPath);
+                                const stream = fs.createWriteStream(tmpPath);
                                 res.pipe(stream);
                                 stream.on('finish', () => {
                                     stream.close();
+                                    fs.renameSync(tmpPath, imgPath);
                                 });
                             });
 
