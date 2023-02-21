@@ -65,5 +65,22 @@
       original: <a href="{{:url}}" target="_blank">Original Share Site Album</a><br>
       subdir: {{:subdir}}
     </div>
+    <script>
+      document.onkeydown = handleArrow;
+      function handleArrow(e) {
+          e = e || window.event;
+
+          {{if prevAlbumDir}}
+          if (e.key == 'ArrowLeft') {
+              window.location.href='../{{:prevAlbumDir}}/index.html';
+          }
+          {{/if}}
+          {{if nextAlbumDir}}
+          if (e.key == 'ArrowRight') {
+              window.location.href='../{{:nextAlbumDir}}/index.html';
+          }
+          {{/if}}
+      }
+    </script>
   </body>
 </html>

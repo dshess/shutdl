@@ -72,5 +72,22 @@
       original: <a href="{{:url}}" target="_blank">Original Share Site Photo</a><br>
       filename: {{:_info.fname}}
     </div>
+    <script>
+      document.onkeydown = handleArrow;
+      function handleArrow(e) {
+          e = e || window.event;
+
+          {{if prevPhoto}}
+          if (e.key == 'ArrowLeft') {
+              window.location.href='{{:prevPhoto}}_photo.html';
+          }
+          {{/if}}
+          {{if nextPhoto}}
+          if (e.key == 'ArrowRight') {
+              window.location.href='{{:nextPhoto}}_photo.html';
+          }
+          {{/if}}
+      }
+    </script>
   </body>
 </html>
