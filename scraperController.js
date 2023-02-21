@@ -75,6 +75,58 @@ async function scrapeAll(browserInstance, argv){
         const pages = await browser.pages()
         let page = pages[0];
 
+        // NOTE: I found that sometimes the scraper got wedged, and as best I
+        // could tell it was because of various tracking stuff.  This was an
+        // attempt to weed out unnecessary cruft.  It seems to have worked for
+        // me, but it's really not clear if it's the right approach.
+        await page.setRequestInterception(true);
+        page.on('request', intercepted_request => {
+            const url = intercepted_request.url();
+            // These all seem to not necessary.
+            if (url.startsWith('https://sb.scorecardresearch.com/') ||
+                url.startsWith('https://www.facebook.com/') ||
+                url.startsWith('https://connect.facebook.net/') ||
+                url.startsWith('https://www.mczbf.com/') ||
+                url.startsWith('https://udc-neb.kampyle.com/') ||
+                url.startsWith('https://assets.adobedtm.com/') ||
+                url.startsWith('https://www.googletagservices.com/') ||
+                url.startsWith('https://securepubads.g.doubleclick.net/') ||
+                false) {
+                intercepted_request.abort();
+                return;
+            }
+            // These seem to be necessary.
+            if (url.startsWith('data:') ||
+                url.startsWith('https://accounts.tinyprints.com/') ||
+                url.startsWith('https://accounts.shutterfly.com/') ||
+                url.startsWith('https://www.shutterfly.com/') ||
+                url.startsWith('https://beacon.shutterfly.com/') ||
+                url.startsWith('https://iam.shutterfly.com/') ||
+                url.startsWith('https://cmd.shutterfly.com/') ||
+                url.startsWith('https://os.shutterfly.com/') ||
+                url.startsWith('https://uniim-cp.shutterfly.com/') ||
+                url.startsWith('https://uniim-share.shutterfly.com/') ||
+                url.startsWith('https://cdn.staticsfly.com/') ||
+                url.startsWith('https://cld1.staticsfly.com/') ||
+                url.startsWith('https://cdn-stage.staticsfly.com/') ||
+                url.startsWith('https://cdn.optimizely.com/') ||
+                url.startsWith('https://fast.fonts.net/') ||
+                url.startsWith('https://ajax.googleapis.com/') ||
+                false) {
+                intercepted_request.continue();
+                return;
+            }
+            // TODO: Root share site URL is also necessary.
+
+            // Default allow, since there could be interstitial ads on login.
+            //console.log(intercepted_request.url());
+            if (true) {
+                intercepted_request.continue();
+            } else {
+                intercepted_request.abort();
+            }
+        });
+
         // For reasons I'm not clear about, sometimes the browser just hangs
         // waiting for the page to load.  To "fix" it, use --login, then bring
         // up the dev inspector, then click Network, then refresh the page, then
