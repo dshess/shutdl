@@ -7,7 +7,7 @@ takeout option.
 
 **WARNING** I attempted to make it work well, but I only have a single example
 site, and this is honestly a collection of systems tied together with bailing
-with and masking tape.  If you thought "I could write a Puppeteer script to
+wire and masking tape.  If you thought "I could write a Puppeteer script to
 scrape this, but I don't have time", this is probably a good starting point for
 you.  If you have never programmed in your life, you are probably in for a rough
 time.  Good luck!
@@ -23,12 +23,22 @@ On OSX, I used MacPorts: https://ports.macports.org/
 sudo port install npm8
 ```
 
+I would expect HomeBrew to also have node.js: https://brew.sh/
+
+---
+
 On Ubuntu 20.04, this seemed to work:
 
 ```sh
 # This seems to install npm6, so I guess older versions work?
 sudo apt-get install npm
 ```
+
+---
+
+On Windows ... good luck, I have no idea.
+
+---
 
 Once node.js is installed:
 
@@ -98,7 +108,7 @@ out after so many minutes of scraping and had to be restarted multiple times.
 It will just pick up where it left off.  Sometimes I had to run with --login to
 get things back on track.
 
-## Site generation
+## Test site generation
 
 ```sh
 npm run site -- --dir="${DIR}"
