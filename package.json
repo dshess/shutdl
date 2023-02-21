@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "jsrender": "^1.0.12",
-    "prompt": "^1.1.0",
     "puppeteer": "^8.0.0"
   }
 }
