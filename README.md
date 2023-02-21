@@ -34,7 +34,7 @@ Once node.js is installed:
 
 ```sh
 # cd to someplace you'd like the code to live.
-git clone git@github.com:dshess/shutdl.git
+git clone https://github.com/dshess/shutdl.git
 cd shutdl
 
 # Install dependencies.
