@@ -32,13 +32,27 @@ async function scrapeRoot(page, rootUrl) {
     let logger = console.log
     logger = () => {}          // Comment this out to see logging.
 
-    // TODO: If the album count is low, there will not be an "All"
-    // button.  Wait for the right stuff to appear, and then only
-    // select "All" if needed.  See albumScraper.js for an example.
+    // TODO: Page id is also the last componend of the URL path.  For instance,
+    // '5'.
+    const id_page = await page.$eval('html', h => h.getAttribute('id'));
+    const id = id_page.split("-")[0];
+    logger("id:", id);
 
-    logger("Click All button");
-    await page.evaluate('Shr.AjaxDataGrid._16("All", 5)');
-    await page.waitForSelector(".all");
+    // |count_sel| will match when all images are present, |pager_sel| will
+    // match when a paged interface is present.  In the latter case, click "All"
+    // and wait for things to update.
+    const count_sel = '.navbar-paging>.all';
+    const pager_sel = '.navbar-paging>.navbar-prev';
+    logger("Waiting for: "+count_sel+','+pager_sel);
+    await page.waitForSelector(count_sel + ',' + pager_sel);
+    logger("Checking: "+pager_sel);
+    if (await page.$(pager_sel)) {
+        logger("Clicking All");
+        // "Click" on the "All" button.
+        await page.evaluate('Shr.AjaxDataGrid._16("All", '+id+')');
+        logger("Waiting for: "+count_sel);
+        await page.waitForSelector(count_sel);
+    }
 
     let info = {}
 
@@ -49,7 +63,6 @@ async function scrapeRoot(page, rootUrl) {
     info.title = await page.$eval(title_sel, item => item.innerText.trim());
     logger("title:", info.title);
 
-    const count_sel = '.navbar-paging';
     info.count = await page.$eval(count_sel, item => item.innerText.trim());
     logger("count:", info.count);
 

@@ -13,17 +13,22 @@ async function scrapeAlbum(page, url, id) {
 
     info.url = url;
 
-    // Get the count.  If it doesn't contain "picture", click "All".
-    const count_sel = '.navbar-paging';
-    info.count = await page.$eval(count_sel, item => item.innerText.trim());
-    logger("count: ", info.count);
-    if (info.count.indexOf("picture") == -1) {
+    // |count_sel| will match when all images are present, |pager_sel| will
+    // match when a paged interface is present.  In the latter case, click "All"
+    // and wait for things to update.
+    const count_sel = '.navbar-paging>.all';
+    const pager_sel = '.navbar-paging>.navbar-prev';
+    logger("Waiting for: "+count_sel+','+pager_sel);
+    await page.waitForSelector(count_sel + ',' + pager_sel);
+    logger("Checking: "+pager_sel);
+    if (await page.$(pager_sel)) {
+        logger("Clicking All");
         // "Click" on the "All" button.
         await page.evaluate('Shr.AjaxDataGrid._16("All", "'+id+'")');
-        await page.waitForTimeout(2000);
-        info.count = await page.$eval(count_sel, item => item.innerText.trim());
-        logger("count(again): ", info.count);
+        logger("Waiting for: "+count_sel);
+        await page.waitForSelector(count_sel);
     }
+    info.count = await page.$eval(count_sel, item => item.innerText.trim());
 
     // TODO: .album-details second child might be cleaner?
     const captionId = '#n_'+id+'_text';
