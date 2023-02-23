@@ -141,3 +141,8 @@ Sometimes things just get entirely messed up.  For the most part, this has
 happened when I changed something major, like running an npm command to update a
 dependency.  So **probably** it won't happen.  Usually, deleting `DIR` and
 `DATADIR` and starting over gets things rolling again.
+
+If the code is reproducibly failing with something like `Error: failed to find
+element matching selector ".pic-img-title"`, then consider adding
+`page.waitForSelector(the_sel)` on the line before the failing line.  See
+photoScraper.scrape(), for an example.
