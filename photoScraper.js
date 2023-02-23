@@ -11,6 +11,7 @@ const photoScraper = {
         logger("url: ", info.url);
 
         const title_sel = '.pic-img-title';
+        await page.waitForSelector(title_sel);
         info.title = await page.$eval(title_sel, item => item.innerText.trim());
         logger("title:", info.title);
 
