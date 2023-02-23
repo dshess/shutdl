@@ -23,7 +23,7 @@ function albumSubdir(date, title) {
     const out = dateRe.exec(date);
     logger("out: ", out);
     newDate = out[3]+"-"+months[out[1]]+"-"+out[2].padStart(2, '0');
-    return newDate + " - " + title.replaceAll("/", "_");
+    return newDate + " - " + title.replace(/[/<>:"/\\|?*]/g, '_');
 }
 
 // Load the root URL, navigate to "All", then pull down the info about all of

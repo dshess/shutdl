@@ -16,7 +16,7 @@ const photoScraper = {
 
         const added_sel = '#pic-detail-added';
         const added = await page.$eval(added_sel, item => item.innerText.trim());
-        info.added = added.replaceAll("&nbsp;", " ");
+        info.added = added.replace(/&nbsp;/g, " ");
         logger("added: ", info.added);
 
         const by_sel = '.format-pic-detail-menu';
@@ -36,7 +36,7 @@ const photoScraper = {
                 fname = info.tag.split(" ")[0];
             }
         }
-        fname = fname.replaceAll("/", "_");
+        fname = fname.replace(/[/<>:"/\\|?*]/g, "_");
 
         // alt is added by the user, include id to make sure fname is unique.
         info.fname = info.id + "_" + fname;

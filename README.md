@@ -36,7 +36,11 @@ sudo apt-get install npm
 
 ---
 
-On Windows ... good luck, I have no idea.
+On Windows 10, I downloaded and installed 32-bit [Node.js
+installer](https://nodejs.org/en/download/).  Then I downloaded and installed
+32-bit [Git for Windows Setup](https://git-scm.com/download/win).  I was able to
+clone from my git-bash window, but I had to run npm from a separate cmd window
+for some reason.
 
 ---
 
